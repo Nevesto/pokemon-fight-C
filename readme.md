@@ -1,4 +1,8 @@
-## Pokmon fight
+# Pokmon fight
+
+## About
+
+Jogo ainda em desenvolvimento...
 
 Use este comando para poder compilar o jogo:
 
