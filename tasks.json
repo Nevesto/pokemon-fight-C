@@ -1,15 +1,15 @@
-{
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "build",
-            "type": "shell",
-            "command": "gcc",
-            "args": ["-o", "main", "main.c", "-I/path/to/sdl2/include", "-L/path/to/sdl2/lib", "-lSDL2"],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        }
-    ]
-}
+// {
+//     "version": "2.0.0",
+//     "tasks": [
+//         {
+//             "label": "build",
+//             "type": "shell",
+//             "command": "gcc",
+//             "args": ["-o", "main", "main.c", "-lSDL2", "-lSDL2_image"],
+//             "group": {
+//                 "kind": "build",
+//                 "isDefault": true
+//             }
+//         }
+//     ]
+// }
