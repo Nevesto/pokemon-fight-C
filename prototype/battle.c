@@ -101,8 +101,9 @@ void batalha(struct Pokemon *p1, struct Pokemon *p2) {
         p1->vida -= dano2;
         
         // Exibir resultados da rodada
-        printf("%s ataca %s com %s, causando %d de dano. %s tem %d de vida restante.\n", p1->nome, p2->nome, p1->ataque1_nome, dano1, p2->nome, p2->vida);
-        printf("%s ataca %s com %s, causando %d de dano. %s tem %d de vida restante.\n", p2->nome, p1->nome, p2->ataque1_nome, dano2, p1->nome, p1->vida);
+        printf("%s ataca %s com %s, causando %d de dano. %s tem %d de vida restante.\n", p1->nome, p2->nome, escolha1 == 1 ? p1->ataque1_nome : escolha1 == 2 ? p1->ataque2_nome : escolha1 == 3 ? p1->ataque3_nome : p1->ataque4_nome, dano1, p2->nome, p2->vida);
+        printf("%s ataca %s com %s, causando %d de dano. %s tem %d de vida restante.\n", p2->nome, p1->nome, escolha2 == 1 ? p2->ataque1_nome : escolha2 == 2 ? p2->ataque2_nome : escolha2 == 3 ? p2->ataque3_nome : p2->ataque4_nome, dano2, p1->nome, p1->vida);
+
         
         // Verificar se algum Pokémon desmaiou
         if (p1->vida <= 0) {
