@@ -10,6 +10,11 @@
 #define SELECT_BUTTON_WIDTH 200
 #define SELECT_BUTTON_HEIGHT 50
 
+#define ATTACK_BUTTON_WIDTH 200
+#define ATTACK_BUTTON_HEIGHT 50
+#define ATTACK_BUTTON_SPACING 20
+#define NUM_ATTACK_BUTTONS 4
+
 Image pokemonImages[POKEMON_COUNT];
 Texture2D pokemonTextures[POKEMON_COUNT];
 Font font;
@@ -24,6 +29,7 @@ typedef enum {
     POKEMON_CHARMANDER,
     POKEMON_SQUIRTLE,
     POKEMON_PIDGEY,
+    RANDOM_POKEMON
 } Pokemon;
 
 typedef struct {
@@ -31,7 +37,14 @@ typedef struct {
     Rectangle rec;
 } PokemonButton;
 
+typedef struct {
+    Rectangle rec;
+    const char *text;
+} AttackButton;
+
 PokemonButton pokemonButtons[POKEMON_COUNT];
+
+AttackButton attackButtons[NUM_ATTACK_BUTTONS];
 
 Rectangle selectButton;
 
@@ -79,9 +92,10 @@ void InitPokemonButtons() {
         buttonX += BUTTON_WIDTH + BUTTON_SPACING;
     }
 
+
     const char *selectText = "Selecionar Pokémon";
     int textWidth = MeasureText(selectText, 20);
-    int padding = 20; // Add some padding around the text
+    int padding = 20;
 
     selectButton = (Rectangle){
         (SCREEN_WIDTH - (textWidth + padding)) / 2,
@@ -90,6 +104,27 @@ void InitPokemonButtons() {
         SELECT_BUTTON_HEIGHT
     };
 }
+
+    void initAttackButtons() {
+        int totalButtonsWidth = (ATTACK_BUTTON_WIDTH * NUM_ATTACK_BUTTONS) + (ATTACK_BUTTON_SPACING * (NUM_ATTACK_BUTTONS - 1));
+        int buttonX = (SCREEN_WIDTH - totalButtonsWidth) / 2;
+        int buttonY = SCREEN_HEIGHT - ATTACK_BUTTON_HEIGHT - 20;
+
+        for(int i = 0; i < NUM_ATTACK_BUTTONS; i++) {
+            attackButtons[i].rec = (Rectangle) {
+                buttonX,
+                buttonY,
+                ATTACK_BUTTON_WIDTH,
+                ATTACK_BUTTON_HEIGHT
+            };
+
+            attackButtons[0].text = TextFormat("Investida");
+            attackButtons[1].text = TextFormat("CHoque do trovão");
+            attackButtons[2].text = TextFormat("Ataque rápido");
+            attackButtons[3].text = TextFormat("Rabo de ferro");
+            buttonX += ATTACK_BUTTON_WIDTH + ATTACK_BUTTON_SPACING;
+        }
+    }
 
 void UpdatePokemonMenu() {
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -146,12 +181,17 @@ void DrawChosenPokemon() {
     DrawTexture(backPokemonTextures[selectedPokemon], posX, posY, WHITE);
 }
 
-Pokemon randomPokemon = POKEMON_BULBASAUR;
+Pokemon randomPokemon = RANDOM_POKEMON;
 
 Pokemon GetRandomPokemon() {
-    if (randomPokemon == POKEMON_BULBASAUR) {
+    if (randomPokemon == RANDOM_POKEMON) {
         int randomIndex = GetRandomValue(0, POKEMON_COUNT - 1);
         randomPokemon = (Pokemon)randomIndex;
+
+        if(randomPokemon == selectedPokemon) {
+            return GetRandomPokemon();
+            randomPokemon == (Pokemon)randomIndex;
+        }
     }
     return randomPokemon;
 }
@@ -173,9 +213,13 @@ void DrawPokemonMenu() {
         DrawPokemonSelectionMenu();
     } else {
         DrawChosenPokemon();
-        
         DrawTexture(pokemonTextures[GetRandomPokemon()], SCREEN_WIDTH - BUTTON_WIDTH, 10, WHITE);
         
+        for(int i = 0; i < NUM_ATTACK_BUTTONS; i++) {
+            DrawRectangleRec(attackButtons[i].rec, WHITE);
+            DrawRectangleLinesEx(attackButtons[i].rec, 2, DARKGRAY);
+            DrawText(attackButtons[i].text, attackButtons[i].rec.x + (attackButtons[i].rec.width - MeasureText(attackButtons[i].text, 20)) / 2, attackButtons[i].rec.y + 10, 20, BLACK);
+        }
     }
 
     EndDrawing();
@@ -187,6 +231,7 @@ int main() {
     backgroundImage = LoadImage("../resources/background/background-1.png");
     backgroundTexture = LoadTextureFromImage(backgroundImage);
     InitPokemonButtons();
+    initAttackButtons();
 
     while (!WindowShouldClose()) {
         UpdatePokemonMenu();
