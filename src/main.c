@@ -24,6 +24,14 @@ Texture2D backgroundTexture;
 Image backPokemonImages[POKEMON_COUNT];
 Texture2D backPokemonTextures[POKEMON_COUNT];
 
+float pokemonLife[POKEMON_COUNT] = {100.0f, 100.0f, 100.0f, 100.0f};
+float enemyPokemonLife = 100.0f;
+
+const int LIFE_BAR_WIDTH = 200;
+const int LIFE_BAR_HEIGHT = 20;
+const int LIFE_BAR_OFFSET_Y = 50;
+const int ENEMY_LIFE_BAR_HEIGHT = 20;
+
 typedef enum {
     POKEMON_BULBASAUR,
     POKEMON_CHARMANDER,
@@ -149,6 +157,14 @@ void DrawTextWithShadow(const char *text, int posX, int posY, int fontSize, Colo
     DrawText(text, posX, posY, fontSize, color);
 }
 
+void DrawLifeBar(float life, Rectangle rec, Color color) {
+    float lifePercentage = life / 100.0f;
+    int lifeBarWidth = (int)(lifePercentage * LIFE_BAR_WIDTH);
+
+    DrawRectangle(rec.x, rec.y, lifeBarWidth, LIFE_BAR_HEIGHT, color);
+    DrawRectangleLines(rec.x, rec.y, LIFE_BAR_WIDTH, LIFE_BAR_HEIGHT, BLACK);
+}
+
 void DrawPokemonSelectionMenu() {
     int textWidth = MeasureText("Escolha seu Pokémon:", 40);
     int posX = (SCREEN_WIDTH - textWidth) / 2; 
@@ -202,24 +218,50 @@ void DrawPokemonMenu() {
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
-    DrawTexturePro(backgroundTexture, 
+    DrawTexturePro(
+                    backgroundTexture, 
                    (Rectangle){ 0.0f, 0.0f, (float)backgroundTexture.width, (float)backgroundTexture.height }, 
                    (Rectangle){ 0.0f, 0.0f, (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT }, 
                    (Vector2){ 0.0f, 0.0f }, 
                    0.0f, 
-                   WHITE);
+                   WHITE
+                   );
 
     if (!pokemonChosen) {
         DrawPokemonSelectionMenu();
     } else {
+        float posX = (SCREEN_WIDTH - BUTTON_WIDTH) / 4;
+        float posY = (SCREEN_HEIGHT - BUTTON_HEIGHT) / 2;
+
         DrawChosenPokemon();
-        DrawTexture(pokemonTextures[GetRandomPokemon()], SCREEN_WIDTH - BUTTON_WIDTH, 10, WHITE);
         
+        DrawTexture(pokemonTextures[GetRandomPokemon()], SCREEN_WIDTH - BUTTON_WIDTH, posY, WHITE); // Desenhe o Pokémon inimigo
+                
         for(int i = 0; i < NUM_ATTACK_BUTTONS; i++) {
             DrawRectangleRec(attackButtons[i].rec, WHITE);
             DrawRectangleLinesEx(attackButtons[i].rec, 2, DARKGRAY);
             DrawText(attackButtons[i].text, attackButtons[i].rec.x + (attackButtons[i].rec.width - MeasureText(attackButtons[i].text, 20)) / 2, attackButtons[i].rec.y + 10, 20, BLACK);
         }
+
+
+        Rectangle lifeBarRec = {
+            posX,
+            posY + BUTTON_HEIGHT + LIFE_BAR_HEIGHT,
+            LIFE_BAR_WIDTH,
+            LIFE_BAR_HEIGHT
+        };
+        DrawLifeBar(pokemonLife[selectedPokemon], lifeBarRec, GREEN);
+
+        float enemy_posY = (SCREEN_HEIGHT - BUTTON_HEIGHT) / 2 - ENEMY_LIFE_BAR_HEIGHT - LIFE_BAR_OFFSET_Y;
+
+        Rectangle enemyLifeBarRec = {
+                SCREEN_WIDTH - BUTTON_WIDTH - LIFE_BAR_WIDTH,
+                enemy_posY + BUTTON_HEIGHT + ENEMY_LIFE_BAR_HEIGHT,
+                LIFE_BAR_WIDTH,
+                LIFE_BAR_HEIGHT
+
+        };
+        DrawLifeBar(enemyPokemonLife, enemyLifeBarRec, RED);
     }
 
     EndDrawing();
