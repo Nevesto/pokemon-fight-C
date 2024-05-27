@@ -73,8 +73,16 @@ const char *backPokemonFilenames[POKEMON_COUNT] = {
     "../resources/fight/back/pokemon_4_back.png"
 };
 
+const char *pokemonNames[POKEMON_COUNT] = {
+    "Charmander",
+    "Squirtle",
+    "Bulbasaur",
+    "Pikachu"
+};
+
 Pokemon selectedPokemon = POKEMON_BULBASAUR;
 bool pokemonChosen = false;
+const char *winnerName = NULL;
 
 void InitPokemonButtons() {
     int totalButtonsWidth = (BUTTON_WIDTH * POKEMON_COUNT) + (BUTTON_SPACING * (POKEMON_COUNT - 1));
@@ -147,10 +155,20 @@ void InitRestartButton() {
     int padding = 20;
     restartButton = (Rectangle) {
         (SCREEN_WIDTH - (textWidth + padding)) / 2,
-        (SCREEN_HEIGHT - SELECT_BUTTON_HEIGHT) / 2,
+        (SCREEN_HEIGHT - SELECT_BUTTON_HEIGHT) / 2 + 50,
         textWidth + padding,
         SELECT_BUTTON_HEIGHT
     };
+}
+
+void EnemyAttack() {
+    int randomAttackIndex = GetRandomValue(0, NUM_ATTACK_BUTTONS - 1);
+    pokemonLife[selectedPokemon] -= attackButtons[randomAttackIndex].damage;
+    if (pokemonLife[selectedPokemon] <= 0) {
+        pokemonLife[selectedPokemon] = 0;
+        winnerName = pokemonNames[randomPokemon];
+        gameOver = true;
+    }
 }
 
 void UpdatePokemonMenu() {
@@ -173,7 +191,10 @@ void UpdatePokemonMenu() {
                     enemyPokemonLife -= attackButtons[i].damage;
                     if (enemyPokemonLife <= 0) {
                         enemyPokemonLife = 0;
+                        winnerName = pokemonNames[selectedPokemon];
                         gameOver = true;
+                    } else {
+                        EnemyAttack();  // Enemy attacks after the player attacks
                     }
                 }
             }
@@ -181,6 +202,7 @@ void UpdatePokemonMenu() {
             if (CheckCollisionPointRec(mousePoint, restartButton)) {
                 pokemonChosen = false;
                 gameOver = false;
+                winnerName = NULL;
                 for (int i = 0; i < POKEMON_COUNT; i++) {
                     pokemonLife[i] = 100.0f;
                 }
@@ -303,6 +325,10 @@ void DrawPokemonMenu() {
         DrawLifeBar(enemyPokemonLife, enemyLifeBarRec, RED);
 
         if (gameOver) {
+            if (winnerName) {
+                DrawTextWithShadow(TextFormat("O vencedor é: %s", winnerName), (SCREEN_WIDTH - MeasureText(TextFormat("O vencedor é: %s", winnerName), 40)) / 2, SCREEN_HEIGHT / 2 - 100, 40, GREEN, DARKGRAY, 2, 2);
+            }
+
             DrawRectangleRec(restartButton, WHITE);
             DrawRectangleLinesEx(restartButton, 2, DARKGRAY);
             DrawText("Reiniciar", restartButton.x + (restartButton.width - MeasureText("Reiniciar", 20)) / 2, restartButton.y + 10, 20, BLACK);
