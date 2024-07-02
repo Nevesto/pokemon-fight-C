@@ -36,7 +36,7 @@ typedef enum {
     POKEMON_BULBASAUR,
     POKEMON_CHARMANDER,
     POKEMON_SQUIRTLE,
-    POKEMON_PIDGEY,
+    POKEMON_PIKACHU,
     RANDOM_POKEMON
 } Pokemon;
 
@@ -77,7 +77,7 @@ const char *pokemonNames[POKEMON_COUNT] = {
     "Charmander",
     "Squirtle",
     "Bulbasaur",
-    "Pikachu"
+    "Pikachu",
 };
 
 Pokemon selectedPokemon = POKEMON_BULBASAUR;
@@ -98,7 +98,7 @@ void InitPokemonButtons() {
         ImageResize(&backPokemonImages[i], BUTTON_WIDTH, BUTTON_HEIGHT);
         backPokemonTextures[i] = LoadTextureFromImage(backPokemonImages[i]);
 
-        pokemonButtons[i] = (PokemonButton){
+        pokemonButtons[i] = (PokemonButton) {
             .texture = pokemonTextures[i],
             .rec = (Rectangle) {
                 buttonX,
@@ -194,7 +194,7 @@ void UpdatePokemonMenu() {
                         winnerName = pokemonNames[selectedPokemon];
                         gameOver = true;
                     } else {
-                        EnemyAttack();  // Enemy attacks after the player attacks
+                        EnemyAttack();
                     }
                 }
             }
